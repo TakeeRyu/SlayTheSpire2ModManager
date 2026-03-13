@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="SlayTheSpire2ModManager.App/SlayTheSpire2ModManager.App.csproj" />
+  <Project Path="SlayTheSpire2ModManager.Infrastructure/SlayTheSpire2ModManager.Infrastructure.csproj" Id="d88fd501-fbe2-4def-b6b3-e6b1c5119357" />
 </Solution>
