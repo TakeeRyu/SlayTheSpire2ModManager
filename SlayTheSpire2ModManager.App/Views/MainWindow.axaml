@@ -1,0 +1,35 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:SlayTheSpire2ModManager.App.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="SlayTheSpire2ModManager.App.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="SlayTheSpire2ModManager.App">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <StackPanel>
+        <DockPanel>
+            <Border Background="Azure">
+                <StackPanel Margin="4" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Image Source="../Assets/Slay_the_Spire_2.webp" MaxHeight="32"></Image>
+                    <TextBlock Margin="6 0 0 0" VerticalAlignment="Center">杀戮尖塔2 Mod管理器</TextBlock>
+                </StackPanel>
+            </Border>
+            <Border Background="Azure">
+                <StackPanel HorizontalAlignment="Right" Margin="4" VerticalAlignment="Center">
+                    <TextBlock Margin="0 0 6 0" VerticalAlignment="Center">V1.0.0</TextBlock>
+                </StackPanel>
+            </Border>
+
+        </DockPanel>
+    </StackPanel>
+
+</Window>
