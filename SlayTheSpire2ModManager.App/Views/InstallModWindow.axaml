@@ -1,0 +1,50 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:SlayTheSpire2ModManager.App.ViewModels"
+        mc:Ignorable="d"
+        d:DesignWidth="520"
+        d:DesignHeight="220"
+        Width="520"
+        Height="220"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        x:Class="SlayTheSpire2ModManager.App.Views.InstallModWindow"
+        x:DataType="vm:InstallModWindowViewModel"
+        Title="安装模组">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*"
+          ColumnDefinitions="*"
+          Margin="12">
+        <TextBlock Text="请选择模组来源（支持 .zip 或文件夹）" />
+
+        <TextBox Grid.Row="1"
+                 Margin="0 8 0 0"
+                 Text="{Binding SourcePath, Mode=TwoWay}"
+                 Watermark="输入或选择模组路径" />
+
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    Spacing="8"
+                    Margin="0 8 0 0">
+            <Button Command="{Binding PickZipCommand}">选择 .zip 文件</Button>
+            <Button Command="{Binding PickFolderCommand}">选择文件夹</Button>
+        </StackPanel>
+
+        <Grid Grid.Row="3"
+              ColumnDefinitions="*,Auto,Auto"
+              Margin="0 12 0 0">
+            <TextBlock VerticalAlignment="Center"
+                       Foreground="Red"
+                       Text="{Binding ErrorMessage}"
+                       IsVisible="{Binding HasError}" />
+            <Button Grid.Column="1"
+                    Margin="8 0 0 0"
+                    Command="{Binding CancelCommand}">取消</Button>
+            <Button Grid.Column="2"
+                    Margin="8 0 0 0"
+                    Command="{Binding InstallCommand}">安装</Button>
+        </Grid>
+    </Grid>
+</Window>

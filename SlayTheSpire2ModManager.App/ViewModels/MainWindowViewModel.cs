@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -12,6 +13,7 @@ using MsBox.Avalonia.Enums;
 using SlayTheSpire2ModManager.App.Models;
 using SlayTheSpire2ModManager.Infrastructure.Configuration;
 using SlayTheSpire2ModManager.Infrastructure.Constants;
+using SlayTheSpire2ModManager.Infrastructure.Models;
 using SlayTheSpire2ModManager.Infrastructure.Utils;
 
 
@@ -35,12 +37,8 @@ namespace SlayTheSpire2ModManager.App.ViewModels
         [ObservableProperty] 
         public ObservableCollection<GameModMetadata> _modMetadataListCollection;
 
+        [ObservableProperty]
         private GameModMetadata? _selectedMod;
-        public GameModMetadata? SelectedMod
-        {
-            get => _selectedMod;
-            set => SetProperty(ref _selectedMod, value);
-        }
 
         public MainWindowViewModel() : this(new AppConfigStore())
         {
@@ -97,6 +95,52 @@ namespace SlayTheSpire2ModManager.App.ViewModels
         public async Task EnableAllMods()
         {
             await SetAllModsEnabledAsync(true);
+        }
+
+        [RelayCommand]
+        public async Task RunGame()
+        {
+
+        }
+
+        public async Task<ModInstallResult?> InstallMod(string? sourcePath, bool forceInstall = false)
+        {
+            if (!IsGameDirectoryAvailable)
+            {
+                var noPathMsg = MessageBoxManager.GetMessageBoxStandard("安装失败", "请先发现游戏路径。", ButtonEnum.Ok);
+                await noPathMsg.ShowAsync();
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(sourcePath))
+            {
+                return null;
+            }
+
+            try
+            {
+                var installResult = await ModInstallUtils.InstallModAsync(GameDirectory!, sourcePath, forceInstall);
+                if (installResult.HasConflict)
+                {
+                    return installResult;
+                }
+
+                if (installResult.IsInstalled)
+                {
+                    await LoadLocalModsFromGameDirectoryAsync();
+                }
+
+                var title = installResult.IsInstalled ? "安装完成" : "安装失败";
+                var resultMsg = MessageBoxManager.GetMessageBoxStandard(title, installResult.Message, ButtonEnum.Ok);
+                await resultMsg.ShowAsync();
+                return installResult;
+            }
+            catch (Exception ex)
+            {
+                var failedMsg = MessageBoxManager.GetMessageBoxStandard("安装失败", $"模组安装失败：{ex.Message}", ButtonEnum.Ok);
+                await failedMsg.ShowAsync();
+                return null;
+            }
         }
 
         private async Task LoadGameDirectoryFromConfigAsync()

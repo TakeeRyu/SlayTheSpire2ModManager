@@ -15,26 +15,35 @@
                PanePlacement="Left">
 
         <SplitView.Pane>
-            <DataGrid ItemsSource="{Binding ModMetadataListCollection}"
-                      SelectedItem="{Binding SelectedMod, Mode=TwoWay}"
-                      SelectionMode="Single"
-                      AutoGenerateColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="启用?" Width="80">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate x:DataType="models:GameModMetadata">
-                                <CheckBox HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"
-                                          IsChecked="{Binding IsEnabled, Mode=TwoWay}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Mod 名称" Binding="{Binding Name}" Width="180" />
-                    <DataGridTextColumn Header="包名" Binding="{Binding PckName}" Width="140" />
-                    <DataGridTextColumn Header="版本" Binding="{Binding Version}" Width="100" />
-                    <DataGridTextColumn Header="作者" Binding="{Binding Author}" Width="180" />
-                </DataGrid.Columns>
-            </DataGrid>
+            <Grid RowDefinitions="Auto,*">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="8"
+                            Margin="0 0 0 8">
+                    <Button Click="OnInstallModClick">安装模组</Button>
+                </StackPanel>
+
+                <DataGrid Grid.Row="1"
+                          ItemsSource="{Binding ModMetadataListCollection}"
+                          SelectedItem="{Binding SelectedMod, Mode=TwoWay}"
+                          SelectionMode="Single"
+                          AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="启用?" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate x:DataType="models:GameModMetadata">
+                                    <CheckBox HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding IsEnabled, Mode=TwoWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Mod 名称" Binding="{Binding Name}" Width="180" />
+                        <DataGridTextColumn Header="包名" Binding="{Binding PckName}" Width="140" />
+                        <DataGridTextColumn Header="版本" Binding="{Binding Version}" Width="100" />
+                        <DataGridTextColumn Header="作者" Binding="{Binding Author}" Width="180" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
         </SplitView.Pane>
 
         <Border BorderThickness="1 0 0 0" BorderBrush="Black" Padding="8">

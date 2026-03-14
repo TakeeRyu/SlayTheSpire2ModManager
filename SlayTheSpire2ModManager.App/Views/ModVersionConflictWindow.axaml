@@ -1,0 +1,55 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:SlayTheSpire2ModManager.App.ViewModels"
+        mc:Ignorable="d"
+        d:DesignWidth="640"
+        d:DesignHeight="360"
+        Width="640"
+        Height="360"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        x:Class="SlayTheSpire2ModManager.App.Views.ModVersionConflictWindow"
+        x:DataType="vm:ModVersionConflictWindowViewModel"
+        Title="模组版本冲突">
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          Margin="12">
+        <TextBlock Text="{Binding ConflictMessage}"
+                   FontWeight="SemiBold"
+                   Foreground="DarkOrange" />
+
+        <Grid Grid.Row="1"
+              Margin="0 10 0 0"
+              ColumnDefinitions="*,*"
+              ColumnSpacing="10">
+            <Border BorderBrush="Gray" BorderThickness="1" Padding="8">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="已安装模组" FontWeight="Bold" />
+                    <TextBlock Text="{Binding ExistingName, StringFormat=名称: {0}}" />
+                    <TextBlock Text="{Binding ExistingVersion, StringFormat=版本: {0}}" />
+                    <TextBlock Text="{Binding ExistingAuthor, StringFormat=作者: {0}}" />
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Padding="8">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="准备安装" FontWeight="Bold" />
+                    <TextBlock Text="{Binding IncomingName, StringFormat=名称: {0}}" />
+                    <TextBlock Text="{Binding IncomingVersion, StringFormat=版本: {0}}" />
+                    <TextBlock Text="{Binding IncomingAuthor, StringFormat=作者: {0}}" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8"
+                    Margin="0 12 0 0">
+            <Button Command="{Binding KeepExistingCommand}">保留已安装版本</Button>
+            <Button Command="{Binding InstallAnywayCommand}">仍然安装</Button>
+        </StackPanel>
+    </Grid>
+</Window>

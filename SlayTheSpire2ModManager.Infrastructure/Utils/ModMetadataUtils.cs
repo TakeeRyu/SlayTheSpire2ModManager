@@ -1,13 +1,11 @@
 using System.Text.Json;
+using SlayTheSpire2ModManager.Infrastructure.Constants;
 using SlayTheSpire2ModManager.Infrastructure.Models;
 
 namespace SlayTheSpire2ModManager.Infrastructure.Utils
 {
     public static class ModMetadataUtils
     {
-        private const string DisabledPrefix = "[DISABLED] ";
-        private const string DisabledSuffix = ".disabled";
-
         public static async Task<IReadOnlyList<ModMetadata>> ReadLocalModsAsync(string gameDirectory, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(gameDirectory))
@@ -15,7 +13,7 @@ namespace SlayTheSpire2ModManager.Infrastructure.Utils
                 return [];
             }
 
-            var modsDirectory = Path.Combine(gameDirectory, "Mods");
+            var modsDirectory = Path.Combine(gameDirectory, ModConstants.ModsDirectoryName);
             if (!Directory.Exists(modsDirectory))
             {
                 return [];
@@ -32,18 +30,18 @@ namespace SlayTheSpire2ModManager.Infrastructure.Utils
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var modDirectoryName = Path.GetFileName(modDirectory);
-                var isDisabled = modDirectoryName.StartsWith(DisabledPrefix, StringComparison.OrdinalIgnoreCase);
+                var isDisabled = modDirectoryName.StartsWith(ModConstants.DisabledPrefix, StringComparison.OrdinalIgnoreCase);
 
                 var hasDll = isDisabled
-                    ? Directory.EnumerateFiles(modDirectory, $"*.dll{DisabledSuffix}", SearchOption.TopDirectoryOnly).Any()
+                    ? Directory.EnumerateFiles(modDirectory, $"*.dll{ModConstants.DisabledSuffix}", SearchOption.TopDirectoryOnly).Any()
                     : Directory.EnumerateFiles(modDirectory, "*.dll", SearchOption.TopDirectoryOnly).Any();
 
                 var hasPck = isDisabled
-                    ? Directory.EnumerateFiles(modDirectory, $"*.pck{DisabledSuffix}", SearchOption.TopDirectoryOnly).Any()
+                    ? Directory.EnumerateFiles(modDirectory, $"*.pck{ModConstants.DisabledSuffix}", SearchOption.TopDirectoryOnly).Any()
                     : Directory.EnumerateFiles(modDirectory, "*.pck", SearchOption.TopDirectoryOnly).Any();
 
                 var jsonFile = isDisabled
-                    ? Directory.EnumerateFiles(modDirectory, $"*.json{DisabledSuffix}", SearchOption.TopDirectoryOnly).FirstOrDefault()
+                    ? Directory.EnumerateFiles(modDirectory, $"*.json{ModConstants.DisabledSuffix}", SearchOption.TopDirectoryOnly).FirstOrDefault()
                     : Directory.EnumerateFiles(modDirectory, "*.json", SearchOption.TopDirectoryOnly).FirstOrDefault();
 
                 if (!hasDll || !hasPck || string.IsNullOrWhiteSpace(jsonFile))
@@ -61,7 +59,7 @@ namespace SlayTheSpire2ModManager.Infrastructure.Utils
                     }
 
                     metadata.Name ??= isDisabled
-                        ? modDirectoryName[DisabledPrefix.Length..]
+                        ? modDirectoryName[ModConstants.DisabledPrefix.Length..]
                         : modDirectoryName;
                     metadata.IsEnabled = !isDisabled;
                     metadata.DirectoryPath = modDirectory;
@@ -94,21 +92,21 @@ namespace SlayTheSpire2ModManager.Infrastructure.Utils
             if (isEnabled)
             {
                 var disabledFiles = Directory
-                    .EnumerateFiles(currentPath, $"*{DisabledSuffix}", SearchOption.AllDirectories)
+                    .EnumerateFiles(currentPath, $"*{ModConstants.DisabledSuffix}", SearchOption.AllDirectories)
                     .ToList();
 
                 foreach (var file in disabledFiles)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    var enabledPath = file[..^DisabledSuffix.Length];
+                    var enabledPath = file[..^ModConstants.DisabledSuffix.Length];
                     File.Move(file, enabledPath, true);
                 }
 
                 var directoryName = Path.GetFileName(currentPath);
-                if (directoryName.StartsWith(DisabledPrefix, StringComparison.OrdinalIgnoreCase))
+                if (directoryName.StartsWith(ModConstants.DisabledPrefix, StringComparison.OrdinalIgnoreCase))
                 {
                     var parent = Path.GetDirectoryName(currentPath)!;
-                    var enabledDirectoryName = directoryName[DisabledPrefix.Length..];
+                    var enabledDirectoryName = directoryName[ModConstants.DisabledPrefix.Length..];
                     var enabledDirectoryPath = Path.Combine(parent, enabledDirectoryName);
                     Directory.Move(currentPath, enabledDirectoryPath);
                     currentPath = enabledDirectoryPath;
@@ -123,17 +121,17 @@ namespace SlayTheSpire2ModManager.Infrastructure.Utils
                 foreach (var file in allFiles)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    if (!file.EndsWith(DisabledSuffix, StringComparison.OrdinalIgnoreCase))
+                    if (!file.EndsWith(ModConstants.DisabledSuffix, StringComparison.OrdinalIgnoreCase))
                     {
-                        File.Move(file, file + DisabledSuffix, true);
+                        File.Move(file, file + ModConstants.DisabledSuffix, true);
                     }
                 }
 
                 var directoryName = Path.GetFileName(currentPath);
-                if (!directoryName.StartsWith(DisabledPrefix, StringComparison.OrdinalIgnoreCase))
+                if (!directoryName.StartsWith(ModConstants.DisabledPrefix, StringComparison.OrdinalIgnoreCase))
                 {
                     var parent = Path.GetDirectoryName(currentPath)!;
-                    var disabledDirectoryPath = Path.Combine(parent, DisabledPrefix + directoryName);
+                    var disabledDirectoryPath = Path.Combine(parent, ModConstants.DisabledPrefix + directoryName);
                     Directory.Move(currentPath, disabledDirectoryPath);
                     currentPath = disabledDirectoryPath;
                 }
