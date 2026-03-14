@@ -2,11 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:SlayTheSpire2ModManager.App.ViewModels"
              xmlns:models="using:SlayTheSpire2ModManager.App.Models"
+             xmlns:converters="using:SlayTheSpire2ModManager.App.Converters"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SlayTheSpire2ModManager.App.AllModsList"
              x:DataType="vm:MainWindowViewModel">
+
+    <UserControl.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+    </UserControl.Resources>
 
     <Grid ColumnDefinitions="540,Auto,*">
         <ScrollViewer Grid.Column="0"
@@ -51,29 +56,39 @@
 
         <Border Grid.Column="2"
                 Padding="8">
-            <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                          VerticalScrollBarVisibility="Auto">
-                <StackPanel Spacing="6"
-                            HorizontalAlignment="Stretch">
-                    <TextBlock FontWeight="Bold" FontSize="16" Text="{Binding SelectedMod.Name, TargetNullValue=未选中模组}" />
-                    <TextBlock Text="{Binding SelectedMod.PckName, StringFormat=包名: {0}, TargetNullValue=包名: -}" />
-                    <TextBlock Text="{Binding SelectedMod.Version, StringFormat=版本: {0}, TargetNullValue=版本: -}" />
-                    <TextBlock Text="{Binding SelectedMod.Author, StringFormat=作者: {0}, TargetNullValue=作者: -}" />
-                    <TextBlock Text="操作:" FontWeight="SemiBold" />
-                    <CheckBox Content="启用该模组"
-                              IsChecked="{Binding SelectedMod.IsEnabled, Mode=TwoWay}" />
-                    <StackPanel Orientation="Horizontal">
-                        <Button Margin="2"
-                                Background="IndianRed"
-                                Click="OnDeleteSelectedModClick">删除</Button>
+            <Grid>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Auto"
+                              IsVisible="{Binding IsModSelected}">
+                    <StackPanel Spacing="6"
+                                HorizontalAlignment="Stretch">
+                        <TextBlock FontWeight="Bold" FontSize="16" Text="{Binding SelectedMod.Name}" />
+                        <TextBlock Text="{Binding SelectedMod.PckName, StringFormat=包名: {0}}" />
+                        <TextBlock Text="{Binding SelectedMod.Version, StringFormat=版本: {0}}" />
+                        <TextBlock Text="{Binding SelectedMod.Author, StringFormat=作者: {0}}" />
+                        <TextBlock Text="操作:" FontWeight="SemiBold" />
+                        <CheckBox Content="启用该模组"
+                                  IsChecked="{Binding SelectedMod.IsEnabled, Mode=TwoWay}" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button Margin="2"
+                                    Background="IndianRed"
+                                    Click="OnDeleteSelectedModClick">删除</Button>
 
+                        </StackPanel>
+
+                        <TextBlock Text="描述:" FontWeight="SemiBold" />
+                        <TextBlock TextWrapping="Wrap"
+                                   Text="{Binding SelectedMod.Description, TargetNullValue=暂无描述}" />
                     </StackPanel>
-                    
-                    <TextBlock Text="描述:" FontWeight="SemiBold" />
-                    <TextBlock TextWrapping="Wrap"
-                               Text="{Binding SelectedMod.Description, TargetNullValue=暂无描述}" />
-                </StackPanel>
-            </ScrollViewer>
+                </ScrollViewer>
+
+                <TextBlock IsVisible="{Binding IsModSelected, Converter={StaticResource InverseBooleanConverter}}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Text="请选择模组！" />
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

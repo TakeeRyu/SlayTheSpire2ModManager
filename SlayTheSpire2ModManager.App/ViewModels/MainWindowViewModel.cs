@@ -40,7 +40,10 @@ namespace SlayTheSpire2ModManager.App.ViewModels
         public ObservableCollection<GameModMetadata> _modMetadataListCollection;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsModSelected))]
         private GameModMetadata? _selectedMod;
+
+        public bool IsModSelected => SelectedMod is not null;
 
         public MainWindowViewModel() : this(new AppConfigStore())
         {
