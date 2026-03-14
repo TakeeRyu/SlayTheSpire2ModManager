@@ -3,6 +3,7 @@
         xmlns:vm="using:SlayTheSpire2ModManager.App.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:app="clr-namespace:SlayTheSpire2ModManager.App"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
         x:Class="SlayTheSpire2ModManager.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -19,78 +20,81 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
+    <Window.DataContext>
+        <vm:MainWindowViewModel />
+    </Window.DataContext>
 
-<Grid RowDefinitions="Auto, Auto, *">
 
-    <Grid Grid.Row="0" Background="Azure" ColumnDefinitions="*,Auto">
-        <StackPanel Orientation="Horizontal" Margin="6" VerticalAlignment="Center">
-            <Image Source="../Assets/Slay_the_Spire_2.webp" MaxHeight="32"/>
-            <TextBlock Margin="6 0 0 0"
-                       VerticalAlignment="Center"
-                       FontWeight="Bold">
-                杀戮尖塔2 Mod管理器
-            </TextBlock>
-        </StackPanel>
+    <Grid RowDefinitions="Auto, Auto, *">
 
-        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0 0 4 0">
-            <Button Margin="1">禁用所有</Button>
-            <Button Margin="1">启用所有</Button>
-            <Button Margin="1" Background="LightGreen">启动游戏</Button>
-        </StackPanel>
-    </Grid>
+        <Grid Grid.Row="0" Background="Azure" ColumnDefinitions="*,Auto">
+            <StackPanel Orientation="Horizontal" Margin="6" VerticalAlignment="Center">
+                <Image Source="../Assets/Slay_the_Spire_2.webp" MaxHeight="32"/>
+                <TextBlock Margin="6 0 0 0"
+                           VerticalAlignment="Center"
+                           FontWeight="Bold">
+                    杀戮尖塔2 Mod管理器
+                </TextBlock>
+            </StackPanel>
 
-    <Border Grid.Row="1" Padding="6">
-        <Grid RowDefinitions="Auto,Auto,Auto"
-              ColumnDefinitions="*,Auto">
-
-            <TextBlock Grid.Row="0"
-                       Grid.ColumnSpan="2"
-                       FontSize="10">
-                游戏路径
-            </TextBlock>
-
-            <TextBox Grid.Row="1"
-                     Grid.Column="0"
-                     IsEnabled="False"
-                     Text="{Binding GameDirectory}" />
-
-            <Button Grid.Row="1"
-                    Grid.Column="1"
-                    Margin="4 0 0 0"
-                    Command="{Binding SetGameDirectoryCommand}">
-                发现
-            </Button>
-
-            <ProgressBar Grid.Row="2"
-                         Grid.ColumnSpan="2"
-                         Margin="0 4 0 0"
-                         IsVisible="{Binding IsLoadingGameDirectory}"
-                         IsIndeterminate="True"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0 0 4 0">
+                <Button Margin="1">禁用所有</Button>
+                <Button Margin="1">启用所有</Button>
+                <Button Margin="1" Background="LightGreen">启动游戏</Button>
+            </StackPanel>
         </Grid>
-    </Border>
 
-    <Grid Grid.Row="2">
+        <Border Grid.Row="1" Padding="6">
+            <Grid RowDefinitions="Auto,Auto,Auto"
+                  ColumnDefinitions="*,Auto">
 
-        <TabControl IsEnabled="{Binding IsGameDirectoryAvailable}">
-            <TabItem Header="已安装" />
-            <TabItem Header="所有" />
-            <TabItem Header="存档槽位" />
-            <TabItem Header="设置" />
-        </TabControl>
+                <TextBlock Grid.Row="0"
+                           Grid.ColumnSpan="2"
+                           FontSize="10">
+                    游戏路径
+                </TextBlock>
 
-        <Border Background="Azure"
-                BorderBrush="Black"
-                BorderThickness="1"
-                Padding="6"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                IsVisible="{Binding !IsGameDirectoryAvailable}">
-            <TextBlock>
-                请先发现游戏路径！
-            </TextBlock>
+                <TextBox Grid.Row="1"
+                         Grid.Column="0"
+                         IsEnabled="False"
+                         Text="{Binding GameDirectory}" />
+
+                <Button Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="4 0 0 0"
+                        Command="{Binding SetGameDirectoryCommand}">
+                    发现
+                </Button>
+
+                <ProgressBar Grid.Row="2"
+                             Grid.ColumnSpan="2"
+                             Margin="0 4 0 0"
+                             IsVisible="{Binding IsLoadingGameDirectory}"
+                             IsIndeterminate="True"/>
+            </Grid>
         </Border>
+		    
+        <Grid Grid.Row="2">
 
+            <TabControl IsEnabled="{Binding IsGameDirectoryAvailable}">
+                <TabItem Header="本地">
+                    <app:AllModsList/>
+                </TabItem>
+                <TabItem Header="在线"></TabItem>
+                <TabItem Header="存档槽位" />
+                <TabItem Header="设置" />
+            </TabControl>
+
+            <Border Background="White"
+                    BorderBrush="Black"
+                    Padding="6"
+                    IsVisible="{Binding !IsGameDirectoryAvailable}">
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
+                    请先发现游戏路径！
+                </TextBlock>
+            </Border>
+
+        </Grid>
     </Grid>
-</Grid>
 
 </Window>

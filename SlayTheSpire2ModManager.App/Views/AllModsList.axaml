@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SlayTheSpire2ModManager.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="SlayTheSpire2ModManager.App.AllModsList"
+             x:DataType="vm:MainWindowViewModel">
+
+
+    <Grid RowDefinitions="*, Auto" ColumnDefinitions="55*, 45*">
+        <DataGrid ItemsSource="{Binding ModMetadataListCollection}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Mod 名称" Binding="{Binding Name}" Width="180" />
+                <DataGridTextColumn Header="包名" Binding="{Binding PckName}" Width="140" />
+                <DataGridTextColumn Header="版本" Binding="{Binding Version}" Width="100" />
+                <DataGridTextColumn Header="作者" Binding="{Binding Author}" Width="180" />
+                <DataGridTextColumn Header="描述" Binding="{Binding Description}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <Border Grid.Row="0" Grid.Column="1" BorderThickness="1 0 0 0" BorderBrush="Black">
+            <StackPanel Margin="6">
+                <TextBlock>Mod名称</TextBlock>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
