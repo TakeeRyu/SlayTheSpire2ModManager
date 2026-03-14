@@ -19,12 +19,6 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
-
-    <Window.DataContext>
-        <vm:MainWindowViewModel />
-    </Window.DataContext>
-
-
     <Grid RowDefinitions="Auto, Auto, *">
 
         <Grid Grid.Row="0" Background="Azure" ColumnDefinitions="*,Auto">

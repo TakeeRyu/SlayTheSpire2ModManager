@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using SlayTheSpire2ModManager.App.Models;
+using SlayTheSpire2ModManager.Infrastructure.Configuration;
 using SlayTheSpire2ModManager.Infrastructure.Constants;
 using SlayTheSpire2ModManager.Infrastructure.Utils;
 
@@ -19,6 +20,7 @@ namespace SlayTheSpire2ModManager.App.ViewModels
     public partial class MainWindowViewModel : ViewModelBase
     {
         private const string EmptyDirectoryString = "尚未发现游戏路径...";
+        private readonly AppConfigStore _appConfigStore;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsGameDirectoryAvailable))]
@@ -32,8 +34,14 @@ namespace SlayTheSpire2ModManager.App.ViewModels
         [ObservableProperty] 
         public ObservableCollection<GameModMetadata> _modMetadataListCollection;
 
-        public MainWindowViewModel()
+        public MainWindowViewModel() : this(new AppConfigStore())
         {
+        }
+
+        public MainWindowViewModel(AppConfigStore appConfigStore)
+        {
+            _appConfigStore = appConfigStore;
+
             var mods = new List<GameModMetadata>
             {
                 new()
@@ -47,6 +55,8 @@ namespace SlayTheSpire2ModManager.App.ViewModels
             };
 
             ModMetadataListCollection = new ObservableCollection<GameModMetadata>(mods);
+
+            _ = LoadGameDirectoryFromConfigAsync();
         }
 
         [RelayCommand]
@@ -74,9 +84,19 @@ namespace SlayTheSpire2ModManager.App.ViewModels
             else
             {
                 GameDirectory = result;
+                await _appConfigStore.SetGameDirectoryAsync(result);
             }
 
             IsLoadingGameDirectory = false;
+        }
+
+        private async Task LoadGameDirectoryFromConfigAsync()
+        {
+            var gameDirectory = await _appConfigStore.GetGameDirectoryAsync();
+            if (!string.IsNullOrWhiteSpace(gameDirectory) && Directory.Exists(gameDirectory))
+            {
+                GameDirectory = gameDirectory;
+            }
         }
     }
 }
