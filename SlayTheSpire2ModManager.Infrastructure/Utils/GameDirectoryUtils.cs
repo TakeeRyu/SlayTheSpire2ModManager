@@ -10,9 +10,9 @@ namespace SlayTheSpire2ModManager.Infrastructure.Utils
 {
     public static class GameDirectoryUtils
     {
-        public static async Task<string?> FindGameDirAsync(string gameDirName, string gameExe)
+        public static async Task<string?> FindGameDirWindowsAsync(string gameDirName, string gameExe)
         {
-            var steamPath = GetSteamPath();
+            var steamPath = GetSteamPath_Windows();
 
             if (!string.IsNullOrEmpty(steamPath))
             {
@@ -90,7 +90,66 @@ namespace SlayTheSpire2ModManager.Infrastructure.Utils
             return null;
         }
 
-        private static string? GetSteamPath()
+        public static async Task<string?> FindGameDirMacAsync(string gameDirName, string gameExe)
+        {
+            var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+            var steamPath = Path.Combine(
+                home,
+                "Library",
+                "Application Support",
+                "Steam"
+            );
+
+            if (!Directory.Exists(steamPath))
+                return null;
+
+            var candidate = Path.Combine(
+                steamPath,
+                "steamapps",
+                "common",
+                gameDirName
+            );
+
+            if (File.Exists(Path.Combine(candidate, gameExe)))
+                return candidate;
+
+            var vdf = Path.Combine(
+                steamPath,
+                "steamapps",
+                "libraryfolders.vdf"
+            );
+
+            if (!File.Exists(vdf))
+                return null;
+
+            var content = await File.ReadAllTextAsync(vdf);
+
+            var matches = Regex.Matches(content, "\"path\"\\s+\"([^\"]+)\"");
+
+            foreach (Match m in matches)
+            {
+                try
+                {
+                    var libPath = m.Groups[1].Value.Replace("\\\\", "\\");
+
+                    candidate = Path.Combine(
+                        libPath,
+                        "steamapps",
+                        "common",
+                        gameDirName
+                    );
+
+                    if (File.Exists(Path.Combine(candidate, gameExe)))
+                        return candidate;
+                }
+                catch { }
+            }
+
+            return null;
+        }
+
+        private static string? GetSteamPath_Windows()
         {
             foreach (var reg in new[]
             {
