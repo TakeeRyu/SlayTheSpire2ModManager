@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Avalonia.Controls.Shapes;
-using Avalonia.Win32;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MsBox.Avalonia;
@@ -21,6 +21,7 @@ namespace SlayTheSpire2ModManager.App.ViewModels
     {
         private const string EmptyDirectoryString = "尚未发现游戏路径...";
         private readonly AppConfigStore _appConfigStore;
+        private bool _isApplyingModState;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsGameDirectoryAvailable))]
@@ -34,6 +35,13 @@ namespace SlayTheSpire2ModManager.App.ViewModels
         [ObservableProperty] 
         public ObservableCollection<GameModMetadata> _modMetadataListCollection;
 
+        private GameModMetadata? _selectedMod;
+        public GameModMetadata? SelectedMod
+        {
+            get => _selectedMod;
+            set => SetProperty(ref _selectedMod, value);
+        }
+
         public MainWindowViewModel() : this(new AppConfigStore())
         {
         }
@@ -42,19 +50,7 @@ namespace SlayTheSpire2ModManager.App.ViewModels
         {
             _appConfigStore = appConfigStore;
 
-            var mods = new List<GameModMetadata>
-            {
-                new()
-                {
-                    Author = "皮一下就很凡@Bilibili",
-                    Description = "谁尽力?谁犯罪?谁的打法不团队?伤害、格挡、助攻、卡牌效率……17种战斗统计全覆盖，数据仪表盘一键复盘。开黑必装，全平台通用。Who carried? Who slacked? 17 combat stat categories, dashboard, co-op ready. Cross-platform.",
-                    Name = "Skada: Damage Meter",
-                    PckName = "DamageMeter",
-                    Version = "1.7.3"
-                }
-            };
-
-            ModMetadataListCollection = new ObservableCollection<GameModMetadata>(mods);
+            ModMetadataListCollection = [];
 
             _ = LoadGameDirectoryFromConfigAsync();
         }
@@ -85,9 +81,22 @@ namespace SlayTheSpire2ModManager.App.ViewModels
             {
                 GameDirectory = result;
                 await _appConfigStore.SetGameDirectoryAsync(result);
+                await LoadLocalModsFromGameDirectoryAsync();
             }
 
             IsLoadingGameDirectory = false;
+        }
+
+        [RelayCommand]
+        public async Task DisableAllMods()
+        {
+            await SetAllModsEnabledAsync(false);
+        }
+
+        [RelayCommand]
+        public async Task EnableAllMods()
+        {
+            await SetAllModsEnabledAsync(true);
         }
 
         private async Task LoadGameDirectoryFromConfigAsync()
@@ -96,6 +105,115 @@ namespace SlayTheSpire2ModManager.App.ViewModels
             if (!string.IsNullOrWhiteSpace(gameDirectory) && Directory.Exists(gameDirectory))
             {
                 GameDirectory = gameDirectory;
+                await LoadLocalModsFromGameDirectoryAsync();
+            }
+        }
+
+        private async Task LoadLocalModsFromGameDirectoryAsync()
+        {
+            UnsubscribeModEvents(ModMetadataListCollection);
+
+            if (!IsGameDirectoryAvailable)
+            {
+                ModMetadataListCollection = [];
+                SelectedMod = null;
+                return;
+            }
+
+            var localMods = await ModMetadataUtils.ReadLocalModsAsync(GameDirectory!);
+
+            ModMetadataListCollection = new ObservableCollection<GameModMetadata>(
+                localMods.Select(mod => new GameModMetadata
+                {
+                    Name = mod.Name,
+                    PckName = mod.PckName,
+                    Author = mod.Author,
+                    Description = mod.Description,
+                    Version = mod.Version,
+                    IsEnabled = mod.IsEnabled,
+                    DirectoryPath = mod.DirectoryPath
+                }));
+
+            SubscribeModEvents(ModMetadataListCollection);
+            SelectedMod = ModMetadataListCollection.FirstOrDefault();
+        }
+
+        private void SubscribeModEvents(IEnumerable<GameModMetadata> mods)
+        {
+            foreach (var mod in mods)
+            {
+                mod.PropertyChanged += OnModPropertyChanged;
+            }
+        }
+
+        private void UnsubscribeModEvents(IEnumerable<GameModMetadata> mods)
+        {
+            foreach (var mod in mods)
+            {
+                mod.PropertyChanged -= OnModPropertyChanged;
+            }
+        }
+
+        private async void OnModPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (_isApplyingModState || e.PropertyName != nameof(GameModMetadata.IsEnabled) || sender is not GameModMetadata mod)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(mod.DirectoryPath))
+            {
+                return;
+            }
+
+            try
+            {
+                _isApplyingModState = true;
+                mod.DirectoryPath = await ModMetadataUtils.SetModEnabledAsync(mod.DirectoryPath, mod.IsEnabled);
+            }
+            catch
+            {
+                mod.IsEnabled = !mod.IsEnabled;
+                var msgBox = MessageBoxManager.GetMessageBoxStandard("更新模组状态失败", "无法修改模组启用状态。", ButtonEnum.Ok);
+                await msgBox.ShowAsync();
+            }
+            finally
+            {
+                _isApplyingModState = false;
+            }
+        }
+
+        private async Task SetAllModsEnabledAsync(bool isEnabled)
+        {
+            if (!IsGameDirectoryAvailable || ModMetadataListCollection.Count == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                _isApplyingModState = true;
+
+                foreach (var mod in ModMetadataListCollection)
+                {
+                    if (string.IsNullOrWhiteSpace(mod.DirectoryPath) || mod.IsEnabled == isEnabled)
+                    {
+                        continue;
+                    }
+
+                    mod.DirectoryPath = await ModMetadataUtils.SetModEnabledAsync(mod.DirectoryPath, isEnabled);
+                    mod.IsEnabled = isEnabled;
+                }
+            }
+            catch
+            {
+                var msgBox = MessageBoxManager.GetMessageBoxStandard("更新模组状态失败", "批量修改模组启用状态失败。", ButtonEnum.Ok);
+                await msgBox.ShowAsync();
+                await LoadLocalModsFromGameDirectoryAsync();
+            }
+            finally
+            {
+                _isApplyingModState = false;
             }
         }
     }

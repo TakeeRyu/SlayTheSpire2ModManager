@@ -1,27 +1,54 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:SlayTheSpire2ModManager.App.ViewModels"
+             xmlns:models="using:SlayTheSpire2ModManager.App.Models"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SlayTheSpire2ModManager.App.AllModsList"
              x:DataType="vm:MainWindowViewModel">
 
+    <SplitView DisplayMode="Inline"
+               IsPaneOpen="True"
+               CompactPaneLength="0"
+               OpenPaneLength="540"
+               PanePlacement="Left">
 
-    <Grid RowDefinitions="*, Auto" ColumnDefinitions="55*, 45*">
-        <DataGrid ItemsSource="{Binding ModMetadataListCollection}" AutoGenerateColumns="False">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Mod 名称" Binding="{Binding Name}" Width="180" />
-                <DataGridTextColumn Header="包名" Binding="{Binding PckName}" Width="140" />
-                <DataGridTextColumn Header="版本" Binding="{Binding Version}" Width="100" />
-                <DataGridTextColumn Header="作者" Binding="{Binding Author}" Width="180" />
-                <DataGridTextColumn Header="描述" Binding="{Binding Description}" Width="*" />
-            </DataGrid.Columns>
-        </DataGrid>
-        <Border Grid.Row="0" Grid.Column="1" BorderThickness="1 0 0 0" BorderBrush="Black">
-            <StackPanel Margin="6">
-                <TextBlock>Mod名称</TextBlock>
+        <SplitView.Pane>
+            <DataGrid ItemsSource="{Binding ModMetadataListCollection}"
+                      SelectedItem="{Binding SelectedMod, Mode=TwoWay}"
+                      SelectionMode="Single"
+                      AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="启用?" Width="80">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:GameModMetadata">
+                                <CheckBox HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          IsChecked="{Binding IsEnabled, Mode=TwoWay}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Mod 名称" Binding="{Binding Name}" Width="180" />
+                    <DataGridTextColumn Header="包名" Binding="{Binding PckName}" Width="140" />
+                    <DataGridTextColumn Header="版本" Binding="{Binding Version}" Width="100" />
+                    <DataGridTextColumn Header="作者" Binding="{Binding Author}" Width="180" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </SplitView.Pane>
+
+        <Border BorderThickness="1 0 0 0" BorderBrush="Black" Padding="8">
+            <StackPanel Spacing="6">
+                <TextBlock FontWeight="Bold" FontSize="16" Text="{Binding SelectedMod.Name, TargetNullValue=未选中模组}" />
+                <TextBlock Text="{Binding SelectedMod.PckName, StringFormat=包名: {0}, TargetNullValue=包名: -}" />
+                <TextBlock Text="{Binding SelectedMod.Version, StringFormat=版本: {0}, TargetNullValue=版本: -}" />
+                <TextBlock Text="{Binding SelectedMod.Author, StringFormat=作者: {0}, TargetNullValue=作者: -}" />
+                <CheckBox Content="启用该模组"
+                          IsChecked="{Binding SelectedMod.IsEnabled, Mode=TwoWay}" />
+                <TextBlock Text="描述:" FontWeight="SemiBold" />
+                <TextBlock TextWrapping="Wrap"
+                           Text="{Binding SelectedMod.Description, TargetNullValue=暂无描述}" />
             </StackPanel>
         </Border>
-    </Grid>
+    </SplitView>
 </UserControl>
