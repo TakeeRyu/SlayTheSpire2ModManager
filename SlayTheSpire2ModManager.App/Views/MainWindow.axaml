@@ -74,11 +74,15 @@
                 <TabItem Header="本地">
                     <app:AllModsList/>
                 </TabItem>
-                <TabItem Header="在线"></TabItem>
+                <TabItem Header="在线">
+                    <TextBlock>施工中！</TextBlock>
+                </TabItem>
                 <TabItem Header="存档槽位">
                     <app:SavesSlot DataContext="{Binding SavesSlot}" />
                 </TabItem>
-                <TabItem Header="设置" />
+                <TabItem Header="设置">
+                    <TextBlock>施工中！</TextBlock>
+                </TabItem>
             </TabControl>
 
             <Border Background="White"

@@ -81,7 +81,7 @@ public partial class SavesSlotViewModel : ViewModelBase
     {
         StatusMessage = SelectedSlot is null
             ? "请先选择一个存档槽位。"
-            : $"[脚手架] 已触发备份命令：{SelectedSlot.SaveTypeLabel} {SelectedSlot.SlotCode}";
+            : "本功能施工中！";
 
         return Task.CompletedTask;
     }
@@ -91,7 +91,7 @@ public partial class SavesSlotViewModel : ViewModelBase
     {
         StatusMessage = SelectedSlot is null
             ? "请先选择一个存档槽位。"
-            : $"[脚手架] 已触发恢复命令：{SelectedSlot.SaveTypeLabel} {SelectedSlot.SlotCode}";
+            : "本功能施工中！";
 
         return Task.CompletedTask;
     }
@@ -101,7 +101,7 @@ public partial class SavesSlotViewModel : ViewModelBase
     {
         StatusMessage = SelectedSlot is null
             ? "请先选择一个存档槽位。"
-            : $"[脚手架] 已触发删除命令：{SelectedSlot.SaveTypeLabel} {SelectedSlot.SlotCode}";
+            : "本功能施工中！";
 
         return Task.CompletedTask;
     }
