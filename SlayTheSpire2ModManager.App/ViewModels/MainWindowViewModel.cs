@@ -103,6 +103,48 @@ namespace SlayTheSpire2ModManager.App.ViewModels
 
         }
 
+        public async Task DeleteSelectedModAsync()
+        {
+            if (SelectedMod is null || string.IsNullOrWhiteSpace(SelectedMod.DirectoryPath))
+            {
+                var noSelectedMsg = MessageBoxManager.GetMessageBoxStandard("删除失败", "请先选择要删除的模组。", ButtonEnum.Ok);
+                await noSelectedMsg.ShowAsync();
+                return;
+            }
+
+            var confirmMsg = MessageBoxManager.GetMessageBoxStandard("确认删除", $"确定要删除模组“{SelectedMod.Name ?? SelectedMod.PckName ?? "未知模组"}”吗？", ButtonEnum.YesNo);
+            var confirmResult = await confirmMsg.ShowAsync();
+            if (confirmResult != ButtonResult.Yes)
+            {
+                return;
+            }
+
+            var modToDelete = SelectedMod;
+
+            try
+            {
+                if (Directory.Exists(modToDelete.DirectoryPath))
+                {
+                    Directory.Delete(modToDelete.DirectoryPath, true);
+                }
+
+                modToDelete.PropertyChanged -= OnModPropertyChanged;
+                var removed = ModMetadataListCollection.Remove(modToDelete);
+                if (removed)
+                {
+                    SelectedMod = ModMetadataListCollection.FirstOrDefault();
+                }
+
+                var successMsg = MessageBoxManager.GetMessageBoxStandard("删除完成", "模组已删除。", ButtonEnum.Ok);
+                await successMsg.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                var failedMsg = MessageBoxManager.GetMessageBoxStandard("删除失败", $"无法删除模组：{ex.Message}", ButtonEnum.Ok);
+                await failedMsg.ShowAsync();
+            }
+        }
+
         public async Task<ModInstallResult?> InstallMod(string? sourcePath, bool forceInstall = false)
         {
             if (!IsGameDirectoryAvailable)

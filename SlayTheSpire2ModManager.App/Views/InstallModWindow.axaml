@@ -17,7 +17,7 @@
     <Grid RowDefinitions="Auto,Auto,Auto,*"
           ColumnDefinitions="*"
           Margin="12">
-        <TextBlock Text="请选择模组来源（支持 .zip 或文件夹）" />
+        <TextBlock Text="请选择..." />
 
         <TextBox Grid.Row="1"
                  Margin="0 8 0 0"

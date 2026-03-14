@@ -43,4 +43,14 @@ public partial class AllModsList : UserControl
             }
         }
     }
+
+    private async void OnDeleteSelectedModClick(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not MainWindowViewModel viewModel)
+        {
+            return;
+        }
+
+        await viewModel.DeleteSelectedModAsync();
+    }
 }
