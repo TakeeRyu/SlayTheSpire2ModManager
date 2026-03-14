@@ -1,0 +1,65 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SlayTheSpire2ModManager.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="450"
+             x:Class="SlayTheSpire2ModManager.App.SavesSlot"
+             x:DataType="vm:SavesSlotViewModel">
+
+    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,*,Auto" Margin="4">
+        <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="8" Margin="0 0 0 6">
+            <Button Command="{Binding RefreshSlotsCommand}">刷新</Button>
+            <Button Command="{Binding BackupSelectedSlotCommand}">备份选中</Button>
+            <Button Command="{Binding RestoreToSelectedSlotCommand}">恢复到选中</Button>
+            <Button Command="{Binding DeleteSelectedSlotCommand}" Background="IndianRed">删除选中</Button>
+        </StackPanel>
+
+        <Border Grid.Row="1" Grid.Column="0" BorderBrush="LightGray" BorderThickness="1" Padding="6" Margin="0 0 4 0">
+            <Grid RowDefinitions="Auto,*">
+                <TextBlock Text="普通存档 (A1-A3)" FontWeight="SemiBold" Margin="0 0 0 4" />
+                <DataGrid Grid.Row="1"
+                          ItemsSource="{Binding NormalSaveSlots}"
+                          SelectedItem="{Binding SelectedSlot, Mode=TwoWay}"
+                          AutoGenerateColumns="False"
+                          SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="槽位" Binding="{Binding SlotCode}" Width="80" />
+                        <!--
+                        <DataGridTextColumn Header="名称" Binding="{Binding DisplayName}" Width="140" />
+                        -->
+                        <DataGridTextColumn Header="最后写入" Binding="{Binding LastWriteTime}" Width="180" />
+                        <DataGridCheckBoxColumn Header="有数据" Binding="{Binding IsValid}" Width="80" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1" BorderBrush="LightGray" BorderThickness="1" Padding="6" Margin="4 0 0 0">
+            <Grid RowDefinitions="Auto,*">
+                <TextBlock Text="模组存档 (B1-B3)" FontWeight="SemiBold" Margin="0 0 0 4" />
+                <DataGrid Grid.Row="1"
+                          ItemsSource="{Binding ModdedSaveSlots}"
+                          SelectedItem="{Binding SelectedSlot, Mode=TwoWay}"
+                          AutoGenerateColumns="False"
+                          SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="槽位" Binding="{Binding SlotCode}" Width="80" />
+                        <!--
+                        <DataGridTextColumn Header="名称" Binding="{Binding DisplayName}" Width="140" />
+                        -->
+                        <DataGridTextColumn Header="最后写入" Binding="{Binding LastWriteTime}" Width="180" />
+                        <DataGridCheckBoxColumn Header="有数据" Binding="{Binding IsValid}" Width="80" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+        <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Spacing="6" Margin="0 6 0 0">
+            <ProgressBar IsVisible="{Binding IsLoading}" IsIndeterminate="True" />
+            <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" />
+        </StackPanel>
+    </Grid>
+</UserControl>

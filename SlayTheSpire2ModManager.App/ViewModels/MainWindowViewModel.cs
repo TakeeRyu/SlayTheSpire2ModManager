@@ -25,6 +25,8 @@ namespace SlayTheSpire2ModManager.App.ViewModels
         private readonly AppConfigStore _appConfigStore;
         private bool _isApplyingModState;
 
+        public SavesSlotViewModel SavesSlot { get; } = new();
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsGameDirectoryAvailable))]
         public string? _gameDirectory = EmptyDirectoryString;

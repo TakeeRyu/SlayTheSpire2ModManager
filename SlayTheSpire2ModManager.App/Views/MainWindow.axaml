@@ -75,7 +75,9 @@
                     <app:AllModsList/>
                 </TabItem>
                 <TabItem Header="在线"></TabItem>
-                <TabItem Header="存档槽位" />
+                <TabItem Header="存档槽位">
+                    <app:SavesSlot DataContext="{Binding SavesSlot}" />
+                </TabItem>
                 <TabItem Header="设置" />
             </TabControl>
 
