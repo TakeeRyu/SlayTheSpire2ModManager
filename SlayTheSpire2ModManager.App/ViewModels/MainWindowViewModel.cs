@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -105,7 +106,10 @@ namespace SlayTheSpire2ModManager.App.ViewModels
         [RelayCommand]
         public async Task RunGame()
         {
-
+            Process.Start(new ProcessStartInfo(GameConstants.GameSteamRunUrl)
+            {
+                UseShellExecute = true
+            });
         }
 
         public async Task DeleteSelectedModAsync()

@@ -34,7 +34,7 @@
             <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0 0 4 0">
                 <Button Margin="1" Command="{Binding DisableAllModsCommand}">禁用所有</Button>
                 <Button Margin="1" Command="{Binding EnableAllModsCommand}">启用所有</Button>
-                <Button Margin="1" Background="LightGreen">启动游戏</Button>
+                <Button Margin="1" Background="LightGreen" Command="{Binding RunGameCommand}">启动游戏</Button>
             </StackPanel>
         </Grid>
 
